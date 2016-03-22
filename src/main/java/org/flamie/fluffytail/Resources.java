@@ -1,4 +1,4 @@
-package org.flamie.fluffy_tail;
+package org.flamie.fluffytail;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 
@@ -24,7 +24,7 @@ public class Resources {
     private static Map<String, Integer> sounds = new HashMap<>();
     private static Map<String, Integer> shaders = new HashMap<>();
 
-    private static int loadTextureFromPNG(String path) throws IOException {
+    private static int loadTextureFromPNG(String path, int filter) throws IOException {
         InputStream inputStream = new FileInputStream(path);
         PNGDecoder decoder = new PNGDecoder(inputStream);
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
@@ -35,8 +35,8 @@ public class Resources {
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, byteBuffer);
         glDisable(GL_TEXTURE_2D);
         return textureID;
@@ -63,10 +63,10 @@ public class Resources {
         return shader;
     }
 
-    public static int getTexture(String path) {
+    public static int getTexture(String path, int filter) {
         if(missingTextureTextureID == null) {
             try {
-                missingTextureTextureID = loadTextureFromPNG("res/images/missing_texture.png");
+                missingTextureTextureID = loadTextureFromPNG("res/images/missing_texture.png", filter);
             } catch(IOException e) {
                 throw new RuntimeException("Can not load missing texture texture");
             }
@@ -74,7 +74,7 @@ public class Resources {
         Integer textureID = textures.get(path);
         if(textureID == null) {
             try {
-                textures.put(path, textureID = loadTextureFromPNG(path));
+                textures.put(path, textureID = loadTextureFromPNG(path, filter));
             } catch (IOException e) {
                 e.printStackTrace();
             }

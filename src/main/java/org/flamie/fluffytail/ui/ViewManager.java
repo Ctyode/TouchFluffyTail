@@ -1,4 +1,4 @@
-package org.flamie.fluffy_tail.ui;
+package org.flamie.fluffytail.ui;
 
 import org.lwjgl.glfw.*;
 

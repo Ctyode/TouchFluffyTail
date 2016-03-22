@@ -1,4 +1,4 @@
-package org.flamie.fluffy_tail.graphics;
+package org.flamie.fluffytail.graphics;
 
 public interface Drawable {
 

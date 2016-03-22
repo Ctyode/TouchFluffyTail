@@ -1,9 +1,9 @@
-package org.flamie.fluffy_tail.ui;
+package org.flamie.fluffytail.ui;
 
-import org.flamie.fluffy_tail.graphics.Drawable;
-import org.flamie.fluffy_tail.input.KeyInputListener;
-import org.flamie.fluffy_tail.input.MouseInputListener;
-import org.flamie.fluffy_tail.shared.Tickable;
+import org.flamie.fluffytail.graphics.Drawable;
+import org.flamie.fluffytail.input.KeyInputListener;
+import org.flamie.fluffytail.input.MouseInputListener;
+import org.flamie.fluffytail.shared.Tickable;
 
 public class View implements Tickable, Drawable, KeyInputListener, MouseInputListener {
 

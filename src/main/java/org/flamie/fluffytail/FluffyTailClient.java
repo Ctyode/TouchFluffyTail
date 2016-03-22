@@ -1,7 +1,7 @@
-package org.flamie.fluffy_tail;
+package org.flamie.fluffytail;
 
-import org.flamie.fluffy_tail.ui.ViewManager;
-import org.flamie.fluffy_tail.view.StartMenu;
+import org.flamie.fluffytail.ui.ViewManager;
+import org.flamie.fluffytail.view.StartMenu;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GL;
@@ -39,11 +39,12 @@ public class FluffyTailClient {
         context.makeCurrent();
         alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
         alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-        ViewManager.init(600, 800, new StartMenu());
+        ViewManager.init(800, 600, new StartMenu());
         glfwSetKeyCallback(window, ViewManager.getGlfwKeyCallback());
         glfwSetCursorPosCallback(window, ViewManager.getGlfwCursorPosCallback());
         glfwSetMouseButtonCallback(window, ViewManager.getGlfwMouseButtonCallback());
         glfwSetScrollCallback(window, ViewManager.getGlfwScrollCallback());
+        glfwSetWindowSizeCallback(window, ViewManager.getGlfwWindowSizeCallback());
     }
 
     public static void run() {

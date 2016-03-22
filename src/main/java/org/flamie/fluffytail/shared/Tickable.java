@@ -1,4 +1,4 @@
-package org.flamie.fluffy_tail.shared;
+package org.flamie.fluffytail.shared;
 
 public interface Tickable {
 

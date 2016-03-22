@@ -1,10 +1,10 @@
-package org.flamie.fluffy_tail.ui;
+package org.flamie.fluffytail.ui;
 
-import org.flamie.fluffy_tail.enums.Images;
-import org.flamie.fluffy_tail.graphics.Drawable;
-import org.flamie.fluffy_tail.graphics.Sprite;
-import org.flamie.fluffy_tail.input.MouseInputListener;
-import org.flamie.fluffy_tail.shared.Tickable;
+import org.flamie.fluffytail.enums.Images;
+import org.flamie.fluffytail.graphics.Drawable;
+import org.flamie.fluffytail.graphics.Sprite;
+import org.flamie.fluffytail.input.MouseInputListener;
+import org.flamie.fluffytail.shared.Tickable;
 
 public class Cursor implements Tickable, Drawable, MouseInputListener {
 
@@ -13,7 +13,7 @@ public class Cursor implements Tickable, Drawable, MouseInputListener {
     private float y;
 
     public Cursor() {
-        cursor = new Sprite(Images.CURSOR.getTexture());
+        cursor = new Sprite(Images.MORDA.getTexture());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Cursor implements Tickable, Drawable, MouseInputListener {
 
     @Override
     public void draw() {
-        cursor.draw(x, y, 0.1f, 0.1f);
+        cursor.draw(x - 0.05f, y - 0.05f, 0.4f, 0.2f);
     }
 
     @Override

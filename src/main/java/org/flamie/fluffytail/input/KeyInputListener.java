@@ -1,4 +1,4 @@
-package org.flamie.fluffy_tail.input;
+package org.flamie.fluffytail.input;
 
 public interface KeyInputListener {
 
