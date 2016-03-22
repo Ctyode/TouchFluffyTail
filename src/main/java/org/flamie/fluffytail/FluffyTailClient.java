@@ -1,7 +1,9 @@
 package org.flamie.fluffytail;
 
-import org.flamie.fluffytail.ui.ViewManager;
-import org.flamie.fluffytail.view.StartMenu;
+import org.flamie.fluffytail.gameobjects.GameWorld;
+import org.flamie.fluffytail.input.Input;
+import org.flamie.fluffytail.ui.Cursor;
+import org.lwjgl.glfw.*;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GL;
@@ -17,7 +19,12 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class FluffyTailClient {
 
     private static long window;
+    private static int windowWidth = 800;
+    private static int windowHeight = 600;
+    private static float aspect;
+    private static Cursor cursor;
     private static ALContext context;
+    private static GameWorld gameWorld;
 
     public static void init() {
         if(glfwInit() != GL_TRUE) {
@@ -26,8 +33,8 @@ public class FluffyTailClient {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-        long primaryMonitor = glfwGetPrimaryMonitor();
-        window = glfwCreateWindow(800, 600, "Touch Fluffy Tail", NULL, NULL);
+        aspect = (float)windowWidth / (float)windowHeight;
+        window = glfwCreateWindow(windowWidth, windowHeight, "Touch Fluffy Tail", NULL, NULL);
         glfwMakeContextCurrent(window);
         glfwSwapInterval(0);
         glfwShowWindow(window);
@@ -39,12 +46,51 @@ public class FluffyTailClient {
         context.makeCurrent();
         alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
         alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-        ViewManager.init(800, 600, new StartMenu());
-        glfwSetKeyCallback(window, ViewManager.getGlfwKeyCallback());
-        glfwSetCursorPosCallback(window, ViewManager.getGlfwCursorPosCallback());
-        glfwSetMouseButtonCallback(window, ViewManager.getGlfwMouseButtonCallback());
-        glfwSetScrollCallback(window, ViewManager.getGlfwScrollCallback());
-        glfwSetWindowSizeCallback(window, ViewManager.getGlfwWindowSizeCallback());
+        gameWorld = new GameWorld();
+        cursor = new Cursor();
+        glfwSetKeyCallback(window, new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if(action == GLFW_PRESS) {
+                    Input.onKeyDown(key, scancode, mods);
+                } else if(action == GLFW_RELEASE) {
+                    Input.onKeyUp(key, scancode, mods);
+                }
+            }
+        });
+        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback() {
+            @Override
+            public void invoke(long window, double x, double y) {
+                float mouseRelativePosX = (float)(x / windowWidth * aspect - (aspect - 1) / 2);
+                float mouseRelativePosY = (float)((windowHeight - y) / windowHeight);
+                cursor.onMouseMove(mouseRelativePosX, mouseRelativePosY);
+                Input.onMouseMove(mouseRelativePosX, mouseRelativePosY);
+            }
+        });
+        glfwSetMouseButtonCallback(window, new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                if(action == GLFW_PRESS) {
+                    Input.onMouseButtonDown(button, mods);
+                } else if(action == GLFW_RELEASE) {
+                    Input.onMouseButtonUp(button, mods);
+                }
+            }
+        });
+        glfwSetScrollCallback(window, new GLFWScrollCallback() {
+            @Override
+            public void invoke(long window, double x, double y) {
+                Input.onScroll(x, y);
+            }
+        });
+        glfwSetWindowSizeCallback(window, new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                windowWidth = width;
+                windowHeight = height;
+                aspect = (float)windowWidth / (float)windowHeight;
+            }
+        });
     }
 
     public static void run() {
@@ -53,23 +99,15 @@ public class FluffyTailClient {
         glEnable(GL_LINE_SMOOTH);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0.0f, 0.98f, 0.60f, 0.0f);
-
-//        int vertexShader = Resources.getShader("res/shaders/shadow_vertex_shader.glsl", GL_VERTEX_SHADER);
-//        int fragmentShader = Resources.getShader("res/shaders/shadow_fragment_shader.glsl", GL_FRAGMENT_SHADER);
-//        int program = glCreateProgram();
-//        glAttachShader(program, vertexShader);
-//        glAttachShader(program, fragmentShader);
-//        glLinkProgram(program);
-//        glValidateProgram(program);
-//        int status = glGetProgrami(program, GL_LINK_STATUS);
-//        System.out.println(status == GL_TRUE);
-//        glUseProgram(program);
-
-        float lastUpdateTime = (float)glfwGetTime();
+        float now = (float)glfwGetTime();
+        float lastUpdateTime = now;
+        float delta;
         while(glfwWindowShouldClose(window) == GL_FALSE) {
-            tick((float)glfwGetTime() - lastUpdateTime);
+            now = (float)glfwGetTime();
+            delta = now - lastUpdateTime;
+            tick(delta);
             draw();
-            lastUpdateTime = (float)glfwGetTime();
+            lastUpdateTime = now;
         }
         glDisable(GL_LINE_SMOOTH);
         glDisable(GL_POLYGON_SMOOTH);
@@ -82,12 +120,17 @@ public class FluffyTailClient {
 
     public static void tick(float delta) {
         glfwPollEvents();
-        ViewManager.tick(delta);
+        gameWorld.tick(delta);
     }
 
     public static void draw() {
+        glLoadIdentity();
+        glViewport(0, 0, windowWidth, windowHeight);
+        double offset = (aspect - 1.0) / 2.0;
+        glOrtho(-offset, 1.0 + offset, 0.0, 1.0, -1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        ViewManager.draw();
+        cursor.draw();
+        gameWorld.draw();
         glfwSwapBuffers(window);
     }
 

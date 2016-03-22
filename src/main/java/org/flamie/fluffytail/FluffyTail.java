@@ -1,4 +1,4 @@
-package org.flamie.fluffytail;
+package org.flamie/* :< */.fluffytail;
 
 public class FluffyTail {
 

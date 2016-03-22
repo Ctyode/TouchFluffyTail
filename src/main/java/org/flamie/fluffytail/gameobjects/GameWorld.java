@@ -29,4 +29,5 @@ public class GameWorld implements Drawable, Tickable {
         world.step(delta, 8, 3);
         entities.forEach(e -> e.tick(delta));
     }
+
 }
