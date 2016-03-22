@@ -1,0 +1,141 @@
+package org.flamie.fluffy_tail.ui;
+
+import org.lwjgl.glfw.*;
+
+import java.util.Stack;
+
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glViewport;
+
+public class ViewManager {
+
+    private static float mouseRelativePosX;
+    private static float mouseRelativePosY;
+    private static Cursor cursor;
+    private static int windowWidth, windowHeight;
+    private static Stack<View> viewStack;
+    private static View currentView;
+    private static GLFWWindowSizeCallback glfwWindowSizeCallback;
+    private static GLFWKeyCallback glfwKeyCallback;
+    private static GLFWCursorPosCallback glfwCursorPosCallback;
+    private static GLFWMouseButtonCallback glfwMouseButtonCallback;
+    private static GLFWScrollCallback glfwScrollCallback;
+    private static float aspect;
+
+    public static void init(int initialWindowWidth, int initialWindowHeight, View rootView) {
+        windowWidth = initialWindowWidth;
+        windowHeight = initialWindowHeight;
+        aspect = (float)windowWidth / (float)windowHeight;
+        viewStack = new Stack<>();
+        currentView = rootView;
+        viewStack.push(rootView);
+        rootView.onViewStarted();
+        cursor = new Cursor();
+        glfwWindowSizeCallback = new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                windowWidth = width;
+                windowHeight = height;
+                aspect = (float)windowWidth / (float)windowHeight;
+            }
+        };
+        glfwKeyCallback = new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if(action == GLFW_PRESS) {
+                    currentView.onKeyDown(key, scancode, mods);
+                } else if(action == GLFW_RELEASE) {
+                    currentView.onKeyUp(key, scancode, mods);
+                }
+            }
+        };
+        glfwCursorPosCallback = new GLFWCursorPosCallback() {
+            @Override
+            public void invoke(long window, double x, double y) {
+                mouseRelativePosX = (float)(x / windowWidth * aspect - (aspect - 1) / 2);
+                mouseRelativePosY = (float)((windowHeight - y) / windowHeight);
+                cursor.onMouseMove(mouseRelativePosX, mouseRelativePosY);
+                currentView.onMouseMove(mouseRelativePosX, mouseRelativePosY);
+            }
+        };
+        glfwMouseButtonCallback = new GLFWMouseButtonCallback() {
+            @Override
+            public void invoke(long window, int button, int action, int mods) {
+                if(action == GLFW_PRESS) {
+                    currentView.onMouseButtonDown(mouseRelativePosX, mouseRelativePosY, button, mods);
+                } else if(action == GLFW_RELEASE) {
+                    currentView.onMouseButtonUp(mouseRelativePosX, mouseRelativePosY, button, mods);
+                }
+            }
+        };
+        glfwScrollCallback = new GLFWScrollCallback() {
+            @Override
+            public void invoke(long window, double x, double y) {
+                currentView.onScroll(mouseRelativePosX, mouseRelativePosY, x, y);
+            }
+        };
+    }
+
+    public static GLFWWindowSizeCallback getGlfwWindowSizeCallback() {
+        return glfwWindowSizeCallback;
+    }
+
+    public static GLFWKeyCallback getGlfwKeyCallback() {
+        return glfwKeyCallback;
+    }
+
+    public static GLFWCursorPosCallback getGlfwCursorPosCallback() {
+        return glfwCursorPosCallback;
+    }
+
+    public static GLFWMouseButtonCallback getGlfwMouseButtonCallback() {
+        return glfwMouseButtonCallback;
+    }
+
+    public static GLFWScrollCallback getGlfwScrollCallback() {
+        return glfwScrollCallback;
+    }
+
+    public static float getAspect() {
+        return aspect;
+    }
+
+    public static View popView() {
+        View prevCurrentView = currentView;
+        viewStack.pop();
+        currentView = viewStack.peek();
+        prevCurrentView.onViewStopped();
+        currentView.onViewStarted();
+        return prevCurrentView;
+    }
+
+    public static View peekView() {
+        return currentView;
+    }
+
+    public static View pushView(View view) {
+        View prevCurrentView = currentView;
+        currentView = view;
+        viewStack.push(view);
+        prevCurrentView.onViewPaused();
+        currentView.onViewStarted();
+        return currentView;
+    }
+
+    public static void draw() {
+        glLoadIdentity();
+        glViewport(0, 0, windowWidth, windowHeight);
+        double offset = (aspect - 1.0) / 2.0;
+        glOrtho(-offset, 1.0 + offset, 0.0, 1.0, -1.0, 1.0);
+        currentView.draw();
+        cursor.draw();
+    }
+
+    public static void tick(float delta) {
+        currentView.tick(delta);
+    }
+
+}
