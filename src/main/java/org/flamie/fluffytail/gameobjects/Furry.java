@@ -9,10 +9,13 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 
-public class Furry implements Drawable, Tickable {
+public class Furry implements Drawable, Tickable, Collidable {
 
     private Sprite sprite;
     private Body body;
+    private float movementVelocity;
+    private float speed = 1.0f;
+    private boolean landed = true;
 
     public Furry(World world, Vec2 position) {
         sprite = new Sprite(Images.MORDA.getTexture());
@@ -25,18 +28,33 @@ public class Furry implements Drawable, Tickable {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.0f;
+        fixtureDef.friction = 1.0f;
         fixtureDef.restitution = 0.0f; // Make it bounce a little bit
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
         body.setFixedRotation(true);
         body.setActive(true);
-        Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(aFloat -> {
-            body.setLinearVelocity(new Vec2(aFloat, 0.0f));
-        });
+        Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(f -> movementVelocity = f * speed);
     }
 
     public Body getBody() {
         return body;
+    }
+
+    @Override
+    public void beginContact(Collidable c) {
+        System.out.println("beginContact");
+        if(c.getClass().equals(Floor.class)) {
+            landed = true;
+        }
+    }
+
+    @Override
+    public void endContact(Collidable c) {
+        System.out.println("endContact");
+        if(c.getClass().equals(Floor.class)) {
+            landed = false;
+        }
     }
 
     @Override
@@ -47,7 +65,13 @@ public class Furry implements Drawable, Tickable {
 
     @Override
     public void tick(float delta) {
-
+        if(movementVelocity != 0.0f) {
+            body.setLinearVelocity(new Vec2(movementVelocity, body.getLinearVelocity().y));
+        }
+        if(Input.isJumping() && landed) {
+            body.applyLinearImpulse(new Vec2(0.0f, 0.04f), body.getPosition());
+            landed = false;
+        }
     }
 
 }

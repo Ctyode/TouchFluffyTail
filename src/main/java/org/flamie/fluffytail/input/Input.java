@@ -7,6 +7,7 @@ public class Input {
     private static float mouseX;
     private static float mouseY;
     private static MoveAxis playerMoveAxis = new MoveAxis();
+    private static boolean jumping = false;
 
     public static void onKeyDown(int key, int scancode, int mods) {
         switch (key) {
@@ -15,6 +16,9 @@ public class Input {
                 break;
             case GLFW_KEY_A:
                 playerMoveAxis.startMovingNegative();
+                break;
+            case GLFW_KEY_SPACE:
+                jumping = true;
                 break;
         }
     }
@@ -26,6 +30,9 @@ public class Input {
                 break;
             case GLFW_KEY_A:
                 playerMoveAxis.stopMovingNegative();
+                break;
+            case GLFW_KEY_SPACE:
+                jumping = false;
                 break;
         }
     }
@@ -58,4 +65,9 @@ public class Input {
     public static MoveAxis getPlayerMoveAxis() {
         return playerMoveAxis;
     }
+
+    public static boolean isJumping() {
+        return jumping;
+    }
+
 }

@@ -7,14 +7,11 @@ import org.flamie.fluffytail.graphics.Sprite;
 import org.flamie.fluffytail.shared.Tickable;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.*;
 
 import java.awt.*;
 
-public class Floor implements Drawable, Tickable {
+public class Floor implements Drawable, Tickable, Collidable {
 
     private Sprite sprite;
     private Body body;
@@ -32,7 +29,8 @@ public class Floor implements Drawable, Tickable {
         body = world.createBody(def);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(width / 2, height / 2);
-        body.createFixture(polygonShape, 2.0f);
+        Fixture fixture = body.createFixture(polygonShape, 2.0f);
+        fixture.setUserData(this);
     }
 
     public Body getBody() {
@@ -40,11 +38,19 @@ public class Floor implements Drawable, Tickable {
     }
 
     @Override
+    public void beginContact(Collidable c) {
+        /* whatever */
+    }
+
+    @Override
+    public void endContact(Collidable c) {
+        /* whatever */
+    }
+
+    @Override
     public void draw() {
         Vec2 position = body.getPosition();
         sprite.draw(position.x - width / 2, position.y - height / 2, width, height);
-        Graphics.strokeRect(position.x - width / 2, position.y - height / 2, width, height, 3.0f, Color.cyan);
-        Graphics.fillRect(position.x, position.y, 0.01f, 0.01f, Color.BLUE);
     }
 
     @Override
