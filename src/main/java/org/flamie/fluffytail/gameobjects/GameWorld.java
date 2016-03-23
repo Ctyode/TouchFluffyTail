@@ -6,10 +6,8 @@ import org.flamie.fluffytail.shared.Tickable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.World;
 
 public class GameWorld implements Drawable, Tickable {
 
@@ -22,7 +20,7 @@ public class GameWorld implements Drawable, Tickable {
         world = new World(new Vec2(0.0f, -9.8f));
         entities = new HashSet<>();
         furry = new Furry(world, new Vec2(0.5f, 0.5f));
-        floor = new Floor(world, new Vec2(0.5f, 0.1f));
+        floor = new Floor(world, new Vec2(0.25f, 0.1f));
     }
 
     @Override

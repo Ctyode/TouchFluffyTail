@@ -25,7 +25,7 @@ public class Furry implements Drawable, Tickable {
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.5f;
         fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+        fixtureDef.restitution = 0.0f; // Make it bounce a little bit
         Fixture fixture = body.createFixture(fixtureDef);
         body.setFixedRotation(true);
         body.setActive(true);
