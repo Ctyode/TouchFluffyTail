@@ -1,25 +1,31 @@
 package org.flamie.fluffytail.gameobjects;
 
 import org.flamie.fluffytail.enums.Images;
+import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.graphics.Sprite;
+import org.flamie.fluffytail.shared.Tickable;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 
-public class Furry extends Entity {
+public class Furry implements Drawable, Tickable {
 
     private Sprite sprite;
-    private float width;
-    private float height;
+    private Body body;
 
-    public Furry(float x, float y, float width, float height) {
-        super(x, y);
-        this.width = width;
-        this.height = height;
+    public Furry(Body body) {
+        this.body = body;
 
         sprite = new Sprite(Images.MORDA.getTexture());
     }
 
+    public Body getBody() {
+        return body;
+    }
+
     @Override
     public void draw() {
-        sprite.draw(0.5f, 0.5f, 0.2f, 0.1f);
+        Vec2 position = body.getPosition();
+        sprite.draw(position.x, position.y, 0.4f, 0.2f);
     }
 
     @Override

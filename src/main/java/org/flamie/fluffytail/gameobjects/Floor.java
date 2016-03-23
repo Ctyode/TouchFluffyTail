@@ -1,12 +1,14 @@
 package org.flamie.fluffytail.gameobjects;
 
 import org.flamie.fluffytail.graphics.Sprite;
+import org.jbox2d.dynamics.Body;
 
 public class Floor extends Entity {
 
     private Sprite sprite;
     private float width;
     private float height;
+    private Body floor;
 
     public Floor(float x, float y, float width, float height, Sprite sprite) {
         super(x, y);
