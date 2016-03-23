@@ -1,41 +1,31 @@
 package org.flamie.fluffytail.gameobjects;
 
+import org.flamie.fluffytail.enums.Images;
+import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.graphics.Sprite;
+import org.flamie.fluffytail.shared.Tickable;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
-public class Floor extends Entity {
+public class Floor implements Drawable, Tickable {
 
     private Sprite sprite;
-    private float width;
-    private float height;
-    private Body floor;
+    private Body body;
 
-    public Floor(float x, float y, float width, float height, Sprite sprite) {
-        super(x, y);
-        this.sprite = sprite;
-        this.width = width;
-        this.height = height;
+    public Floor(Body body) {
+        this.body = body;
+
+        sprite = new Sprite(Images.MISSING_TEXTURE.getTexture());
     }
 
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
+    public Body getBody() {
+        return body;
     }
 
     @Override
     public void draw() {
-        sprite.draw(getX(), getY(), getWidth(), getHeight());
+        Vec2 position = body.getPosition();
+        sprite.draw(position.x, position.y, 0.6f, 0.1f);
     }
 
     @Override

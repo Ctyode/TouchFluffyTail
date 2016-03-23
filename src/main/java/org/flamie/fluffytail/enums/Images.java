@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public enum Images {
 
+    MISSING_TEXTURE ("res/images/missing_texture.png", GL_NEAREST),
     CURSOR ("res/images/cursor.png", GL_LINEAR),
     MORDA ("res/images/flamie_64x32.png", GL_NEAREST);
 
