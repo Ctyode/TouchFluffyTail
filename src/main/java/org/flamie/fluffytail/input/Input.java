@@ -1,16 +1,33 @@
 package org.flamie.fluffytail.input;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class Input {
 
     private static float mouseX;
     private static float mouseY;
+    private static MoveAxis playerMoveAxis = new MoveAxis();
 
     public static void onKeyDown(int key, int scancode, int mods) {
-
+        switch (key) {
+            case GLFW_KEY_D:
+                playerMoveAxis.startMovingPositive();
+                break;
+            case GLFW_KEY_A:
+                playerMoveAxis.startMovingNegative();
+                break;
+        }
     }
 
     public static void onKeyUp(int key, int scancode, int mods) {
-
+        switch (key) {
+            case GLFW_KEY_D:
+                playerMoveAxis.stopMovingPositive();
+                break;
+            case GLFW_KEY_A:
+                playerMoveAxis.stopMovingNegative();
+                break;
+        }
     }
 
     public static void onMouseMove(float x, float y) {
@@ -38,4 +55,7 @@ public class Input {
         return mouseY;
     }
 
+    public static MoveAxis getPlayerMoveAxis() {
+        return playerMoveAxis;
+    }
 }

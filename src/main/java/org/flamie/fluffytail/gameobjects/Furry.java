@@ -3,6 +3,7 @@ package org.flamie.fluffytail.gameobjects;
 import org.flamie.fluffytail.enums.Images;
 import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.graphics.Sprite;
+import org.flamie.fluffytail.input.Input;
 import org.flamie.fluffytail.shared.Tickable;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
@@ -24,11 +25,14 @@ public class Furry implements Drawable, Tickable {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0.0f; // Make it bounce a little bit
         Fixture fixture = body.createFixture(fixtureDef);
         body.setFixedRotation(true);
         body.setActive(true);
+        Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(aFloat -> {
+            body.setLinearVelocity(new Vec2(aFloat, 0.0f));
+        });
     }
 
     public Body getBody() {
@@ -38,7 +42,7 @@ public class Furry implements Drawable, Tickable {
     @Override
     public void draw() {
         Vec2 position = body.getPosition();
-        sprite.draw(position.x, position.y, 0.4f, 0.2f);
+        sprite.draw(position.x - 0.2f, position.y - 0.1f, 0.4f, 0.2f);
     }
 
     @Override

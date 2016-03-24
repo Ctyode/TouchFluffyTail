@@ -20,7 +20,7 @@ public class GameWorld implements Drawable, Tickable {
         world = new World(new Vec2(0.0f, -9.8f));
         entities = new HashSet<>();
         furry = new Furry(world, new Vec2(0.5f, 0.5f));
-        floor = new Floor(world, new Vec2(0.25f, 0.1f));
+        floor = new Floor(world, new Vec2(0.5f, 0.1f), 1.0f, 0.2f);
     }
 
     @Override
