@@ -43,7 +43,6 @@ public class Furry implements Drawable, Tickable, Collidable {
 
     @Override
     public void beginContact(Collidable c) {
-        System.out.println("beginContact");
         if(c.getClass().equals(Floor.class)) {
             landed = true;
         }
@@ -51,7 +50,6 @@ public class Furry implements Drawable, Tickable, Collidable {
 
     @Override
     public void endContact(Collidable c) {
-        System.out.println("endContact");
         if(c.getClass().equals(Floor.class)) {
             landed = false;
         }

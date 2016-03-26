@@ -18,13 +18,38 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
 
     private World world;
     private Furry furry;
-    private Floor floor;
+    private Floor[] floor;
+    private float x;
+    private float y;
 
     public GameWorld() {
         world = new World(new Vec2(0.0f, -9.8f));
         world.setContactListener(this);
-        furry = new Furry(world, new Vec2(0.5f, 0.5f));
-        floor = new Floor(world, new Vec2(0.5f, 0.1f), 1.0f, 0.2f);
+        floor = new Floor[8];
+
+        for(int j = 0; j < floor.length; j++) {
+            x = (float) Math.random();
+            if (x < 0.35) {
+                x = 0.1f;
+            } else if (x > 0.35 && x < 0.7) {
+                x = 0.5f;
+            } else {
+                x = 0.9f;
+            }
+
+            y = (float) Math.random();
+            if (y < 0.35) {
+                y = 0.15f;
+            } else if (y > 0.35 && y < 0.7) {
+                y = 0.5f;
+            } else {
+                y = 0.8f;
+            }
+
+            floor[j] = new Floor(world, new Vec2(x, y), 0.3f, 0.05f);
+        }
+
+        furry = new Furry(world, new Vec2(x, y + 0.1f));
     }
 
     @Override
@@ -52,13 +77,18 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     @Override
     public void draw() {
         furry.draw();
-        floor.draw();
+        for (Floor f : floor) {
+            f.draw();
+        }
     }
 
     @Override
     public void tick(float delta) {
         world.step(delta, 8, 3);
         furry.tick(delta);
+        for (Floor f : floor) {
+            f.tick(delta);
+        }
     }
 
 }
