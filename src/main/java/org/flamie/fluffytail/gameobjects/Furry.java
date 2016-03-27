@@ -16,6 +16,7 @@ public class Furry implements Drawable, Tickable, Collidable {
     private float movementVelocity;
     private float speed = 1.0f;
     private boolean landed = true;
+    private Vec2 respawnPosition;
 
     public Furry(World world, Vec2 position) {
         sprite = new Sprite(Images.MORDA.getTexture());
@@ -35,6 +36,7 @@ public class Furry implements Drawable, Tickable, Collidable {
         body.setFixedRotation(true);
         body.setActive(true);
         Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(f -> movementVelocity = f * speed);
+        respawnPosition = position;
     }
 
     public Body getBody() {
@@ -69,6 +71,9 @@ public class Furry implements Drawable, Tickable, Collidable {
         if(Input.isJumping() && landed) {
             body.applyLinearImpulse(new Vec2(0.0f, 0.04f), body.getPosition());
             landed = false;
+        }
+        if(body.getPosition().y < 0.0f) {
+            body.setTransform(respawnPosition, 0.0f);
         }
     }
 

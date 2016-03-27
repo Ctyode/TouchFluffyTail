@@ -17,6 +17,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 public class GameWorld implements Drawable, Tickable, ContactListener {
 
     private World world;
+    private Camera camera;
     private Furry furry;
     private Floor[] floor;
     private float x;
@@ -50,6 +51,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         }
 
         furry = new Furry(world, new Vec2(x, y + 0.1f));
+        camera = new Camera(furry, f -> f.getBody().getPosition());
     }
 
     @Override
@@ -76,6 +78,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
 
     @Override
     public void draw() {
+        camera.draw();
         furry.draw();
         for (Floor f : floor) {
             f.draw();
@@ -86,6 +89,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     public void tick(float delta) {
         world.step(delta, 8, 3);
         furry.tick(delta);
+        camera.tick(delta);
         for (Floor f : floor) {
             f.tick(delta);
         }
