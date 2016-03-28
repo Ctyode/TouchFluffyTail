@@ -9,6 +9,8 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 
+import java.util.function.Consumer;
+
 public class Furry implements Drawable, Tickable, Collidable {
 
     private Sprite sprite;
@@ -17,8 +19,9 @@ public class Furry implements Drawable, Tickable, Collidable {
     private float speed = 1.0f;
     private boolean landed = true;
     private Vec2 respawnPosition;
+    private Consumer<Furry> onDieConsumer;
 
-    public Furry(World world, Vec2 position) {
+    public Furry(World world, Vec2 position, Consumer<Furry> onDieConsumer) {
         sprite = new Sprite(Images.MORDA.getTexture());
         BodyDef def = new BodyDef();
         def.type = BodyType.DYNAMIC;
@@ -37,6 +40,8 @@ public class Furry implements Drawable, Tickable, Collidable {
         body.setActive(true);
         Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(f -> movementVelocity = f * speed);
         respawnPosition = position;
+
+        this.onDieConsumer = onDieConsumer;
     }
 
     public Body getBody() {
@@ -74,6 +79,7 @@ public class Furry implements Drawable, Tickable, Collidable {
         }
         if(body.getPosition().y < 0.0f) {
             body.setTransform(respawnPosition, 0.0f);
+            onDieConsumer.accept(this);
         }
     }
 

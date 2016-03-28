@@ -22,6 +22,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     private Camera camera;
     private Furry furry;
     private Deque<Floor> floor;
+    private Floor[] startPlatforms;
     private float x;
     private float y;
     private float nextGeneratedPosition;
@@ -30,10 +31,13 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         world = new World(new Vec2(0.0f, -9.8f));
         world.setContactListener(this);
         floor = new ArrayDeque<>();
-        nextGeneratedPosition = 0.0f;
+        startPlatforms = new Floor[3];
+        createStartPlatforms();
+
+        nextGeneratedPosition = 1.0f;
         createPlatforms();
 
-        furry = new Furry(world, new Vec2(x, y + 0.1f));
+        furry = new Furry(world, new Vec2(0.5f, 0.6f), f -> nextGeneratedPosition = 1.0f);
         camera = new Camera(furry, f -> f.getBody().getPosition());
     }
 
@@ -69,6 +73,12 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         }
     }
 
+    public void createStartPlatforms() {
+        startPlatforms[0] = new Floor(world, new Vec2(0.1f, 0.15f), 0.3f, 0.05f);
+        startPlatforms[1] = new Floor(world, new Vec2(0.5f, 0.5f), 0.3f, 0.05f);
+        startPlatforms[2] = new Floor(world, new Vec2(0.9f, 0.8f), 0.3f, 0.05f);
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Collidable a = (Collidable) contact.getFixtureA().getUserData();
@@ -95,6 +105,9 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     public void draw() {
         camera.draw();
         furry.draw();
+        for (Floor s : startPlatforms) {
+            s.draw();
+        }
         for (Floor f : floor) {
             f.draw();
         }
@@ -109,6 +122,9 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
             nextGeneratedPosition += 1.0f;
             createPlatforms();
             deletePlatforms();
+        }
+        for (Floor s : startPlatforms) {
+            s.tick(delta);
         }
         for (Floor f : floor) {
             f.tick(delta);
