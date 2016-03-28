@@ -3,6 +3,8 @@ package org.flamie.fluffytail.gameobjects;
 import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.shared.Tickable;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,16 +21,31 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     private World world;
     private Camera camera;
     private Furry furry;
-    private Floor[] floor;
+    private Deque<Floor> floor;
     private float x;
     private float y;
+    private float nextGeneratedPosition;
 
     public GameWorld() {
         world = new World(new Vec2(0.0f, -9.8f));
         world.setContactListener(this);
-        floor = new Floor[8];
+        floor = new ArrayDeque<>();
+        nextGeneratedPosition = 0.0f;
+        createPlatforms();
 
-        for(int j = 0; j < floor.length; j++) {
+        furry = new Furry(world, new Vec2(x, y + 0.1f));
+        camera = new Camera(furry, f -> f.getBody().getPosition());
+    }
+
+    public void deletePlatforms() {
+        while(floor.size() > 12) {
+            Floor f = floor.removeFirst();
+            world.destroyBody(f.getBody());
+        }
+    }
+
+    public void createPlatforms() {
+        for(int j = 0; j < 4; j++) {
             x = (float) Math.random();
             if (x < 0.35) {
                 x = 0.1f;
@@ -47,11 +64,9 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
                 y = 0.8f;
             }
 
-            floor[j] = new Floor(world, new Vec2(x, y), 0.3f, 0.05f);
+            x += nextGeneratedPosition;
+            floor.addLast(new Floor(world, new Vec2(x, y), 0.3f, 0.05f));
         }
-
-        furry = new Furry(world, new Vec2(x, y + 0.1f));
-        camera = new Camera(furry, f -> f.getBody().getPosition());
     }
 
     @Override
@@ -90,6 +105,11 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         world.step(delta, 8, 3);
         furry.tick(delta);
         camera.tick(delta);
+        if(furry.getBody().getPosition().x > nextGeneratedPosition) {
+            nextGeneratedPosition += 1.0f;
+            createPlatforms();
+            deletePlatforms();
+        }
         for (Floor f : floor) {
             f.tick(delta);
         }
