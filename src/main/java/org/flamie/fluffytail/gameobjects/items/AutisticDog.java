@@ -8,12 +8,12 @@ import org.jbox2d.dynamics.World;
 
 public class AutisticDog extends Item {
 
-    public AutisticDog(GameWorld gameWorld, World world, Vec2 position) {
-        super(gameWorld, world, position, new Sprite(Images.AUTISM.getTexture()));
-        setOnPickup((gw, w, f) -> {
+    public AutisticDog(World world, Vec2 position) {
+        super(world, position, new Sprite(Images.AUTISM.getTexture()));
+        setOnPickup((f) -> {
             f.getEffects().activateAutism();
-            gw.removeEntity(this);
-            w.destroyBody(getBody());
+            GameWorld.getInstance().removeEntity(this);
+            GameWorld.getInstance().getB2DWorld().destroyBody(getBody());
         });
     }
 

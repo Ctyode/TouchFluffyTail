@@ -51,7 +51,7 @@ public class FluffyTailClient {
         context.makeCurrent();
         alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
         alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-        gameWorld = new GameWorld();
+        gameWorld = GameWorld.getInstance();
         cursor = new Cursor();
 
         glfwKeyCallback = new GLFWKeyCallback() {

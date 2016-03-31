@@ -18,6 +18,8 @@ import org.jbox2d.dynamics.contacts.Contact;
 
 public class GameWorld implements Drawable, Tickable, ContactListener {
 
+    private static GameWorld instance;
+
     private World world;
     private Camera camera;
     private Deque<Platform> platforms;
@@ -26,7 +28,14 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     private Set<Entity> entities;
     private float nextGeneratedPosition;
 
-    public GameWorld() {
+    public static GameWorld getInstance() {
+        if(instance == null) {
+            instance = new GameWorld();
+        }
+        return instance;
+    }
+
+    private GameWorld() {
         world = new World(new Vec2(0.0f, -9.8f));
         world.setContactListener(this);
         platforms = new ArrayDeque<>();
@@ -39,8 +48,12 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         entities = new HashSet<>();
         furry = new Furry(world, new Vec2(0.5f, 0.6f), f -> nextGeneratedPosition = 0.5f);
         entities.add(furry);
-        entities.add(new AutisticDog(this, world, new Vec2(0.5f, 0.6f)));
+        entities.add(new AutisticDog(world, new Vec2(0.5f, 0.6f)));
         camera = new Camera(furry, f -> f.getBody().getPosition());
+    }
+
+    public World getB2DWorld() {
+        return world;
     }
 
     public void deletePlatforms() {
