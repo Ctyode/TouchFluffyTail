@@ -11,14 +11,14 @@ import org.jbox2d.dynamics.*;
 
 import java.awt.*;
 
-public class Floor implements Drawable, Tickable, Collidable {
+public class Platform extends Entity {
 
     private Sprite sprite;
     private Body body;
     private float width;
     private float height;
 
-    public Floor(World world, Vec2 position, float width, float height) {
+    public Platform(World world, Vec2 position, float width, float height) {
         this.width = width;
         this.height = height;
 

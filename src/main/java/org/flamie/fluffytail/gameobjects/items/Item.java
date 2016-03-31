@@ -1,24 +1,28 @@
 package org.flamie.fluffytail.gameobjects.items;
 
 import org.flamie.fluffytail.gameobjects.Collidable;
+import org.flamie.fluffytail.gameobjects.Entity;
 import org.flamie.fluffytail.gameobjects.Furry;
-import org.flamie.fluffytail.graphics.Drawable;
+import org.flamie.fluffytail.gameobjects.GameWorld;
 import org.flamie.fluffytail.graphics.Sprite;
-import org.flamie.fluffytail.shared.Tickable;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 
-import java.util.function.BiConsumer;
+public class Item extends Entity {
 
-public class Item implements Drawable, Tickable, Collidable {
+    public interface OnPickup {
+        void onPickup(GameWorld gw, World w, Furry f);
+    }
 
+    private GameWorld gameWorld;
     private World world;
     private Sprite sprite;
     private Body body;
-    private BiConsumer<World, Furry> onTouch;
+    private OnPickup onPickup;
 
-    public Item(World world, Vec2 position, Sprite sprite, BiConsumer<World, Furry> onTouch) {
+    public Item(GameWorld gameWorld, World world, Vec2 position, Sprite sprite, OnPickup onPickup) {
+        this.gameWorld = gameWorld;
         this.world = world;
         this.sprite = sprite;
 
@@ -38,26 +42,26 @@ public class Item implements Drawable, Tickable, Collidable {
         body.setFixedRotation(true);
         body.setActive(true);
 
-        this.onTouch = onTouch;
+        this.onPickup = onPickup;
     }
 
-    public Item(World world, Vec2 position, Sprite sprite) {
-        this(world, position, sprite, null);
+    public Item(GameWorld gameWorld, World world, Vec2 position, Sprite sprite) {
+        this(gameWorld, world, position, sprite, null);
     }
 
     public Body getBody() {
         return body;
     }
 
-    public void setOnTouch(BiConsumer<World, Furry> onTouch) {
-        this.onTouch = onTouch;
+    public void setOnPickup(OnPickup onPickup) {
+        this.onPickup = onPickup;
     }
 
     @Override
     public void beginContact(Collidable c) {
         if(c.getClass().equals(Furry.class)) {
-            if(onTouch != null) {
-                onTouch.accept(world, (Furry) c);
+            if(onPickup != null) {
+                onPickup.onPickup(gameWorld, world, (Furry) c);
             }
         }
     }

@@ -1,21 +1,15 @@
 package org.flamie.fluffytail.gameobjects;
 
 import org.flamie.fluffytail.enums.Images;
-import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.graphics.Sprite;
 import org.flamie.fluffytail.input.Input;
-import org.flamie.fluffytail.shared.Tickable;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
-public class Furry implements Drawable, Tickable, Collidable {
-
-    public static final int autism = 1;
+public class Furry extends Entity {
 
     private Sprite sprite;
     private Body body;
@@ -24,7 +18,7 @@ public class Furry implements Drawable, Tickable, Collidable {
     private boolean landed = true;
     private Vec2 respawnPosition;
     private Consumer<Furry> onDieConsumer;
-    private Set<Integer> effects;
+    private Effects effects;
 
     public Furry(World world, Vec2 position, Consumer<Furry> onDieConsumer) {
         sprite = new Sprite(Images.MORDA.getTexture());
@@ -45,17 +39,9 @@ public class Furry implements Drawable, Tickable, Collidable {
         body.setActive(true);
         Input.getPlayerMoveAxis().getAxisPublishSubject().subscribe(f -> movementVelocity = f * speed);
         respawnPosition = position;
-        effects = new HashSet<>();
+        effects = new Effects();
 
         this.onDieConsumer = onDieConsumer;
-    }
-
-    public void applyEffect(int e) {
-        effects.add(e);
-    }
-
-    public void purgeEffect(int e) {
-        effects.remove(e);
     }
 
     public Body getBody() {
@@ -64,16 +50,20 @@ public class Furry implements Drawable, Tickable, Collidable {
 
     @Override
     public void beginContact(Collidable c) {
-        if(c.getClass().equals(Floor.class)) {
+        if(c.getClass().equals(Platform.class)) {
             landed = true;
         }
     }
 
     @Override
     public void endContact(Collidable c) {
-        if(c.getClass().equals(Floor.class)) {
+        if(c.getClass().equals(Platform.class)) {
             landed = false;
         }
+    }
+
+    public Effects getEffects() {
+        return effects;
     }
 
     @Override
@@ -84,8 +74,9 @@ public class Furry implements Drawable, Tickable, Collidable {
 
     @Override
     public void tick(float delta) {
+        effects.tick(delta);
         if(movementVelocity != 0.0f) {
-            if(effects.contains(autism)) {
+            if(effects.isAutismActive()) {
                 body.setLinearVelocity(new Vec2(-movementVelocity, body.getLinearVelocity().y));
             } else {
                 body.setLinearVelocity(new Vec2(movementVelocity, body.getLinearVelocity().y));
