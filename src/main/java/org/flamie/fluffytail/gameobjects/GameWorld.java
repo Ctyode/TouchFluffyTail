@@ -1,5 +1,7 @@
 package org.flamie.fluffytail.gameobjects;
 
+import org.flamie.fluffytail.gameobjects.items.AutisticDog;
+import org.flamie.fluffytail.gameobjects.items.Item;
 import org.flamie.fluffytail.graphics.Drawable;
 import org.flamie.fluffytail.shared.Tickable;
 
@@ -23,6 +25,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     private Furry furry;
     private Deque<Floor> floor;
     private Floor[] startPlatforms;
+    private AutisticDog autism;
     private float x;
     private float y;
     private float nextGeneratedPosition;
@@ -37,12 +40,13 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
         nextGeneratedPosition = 1.0f;
         createPlatforms();
 
-        furry = new Furry(world, new Vec2(0.5f, 0.6f), f -> nextGeneratedPosition = 1.0f);
+        furry = new Furry(world, new Vec2(0.5f, 0.6f), f -> nextGeneratedPosition = 0.5f);
+        autism = new AutisticDog(world, new Vec2(0.5f, 0.6f));
         camera = new Camera(furry, f -> f.getBody().getPosition());
     }
 
     public void deletePlatforms() {
-        while(floor.size() > 12) {
+        while(floor.size() > 24) {
             Floor f = floor.removeFirst();
             world.destroyBody(f.getBody());
         }
@@ -74,9 +78,21 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     }
 
     public void createStartPlatforms() {
-        startPlatforms[0] = new Floor(world, new Vec2(0.1f, 0.15f), 0.3f, 0.05f);
-        startPlatforms[1] = new Floor(world, new Vec2(0.5f, 0.5f), 0.3f, 0.05f);
-        startPlatforms[2] = new Floor(world, new Vec2(0.9f, 0.8f), 0.3f, 0.05f);
+        double a = Math.random();
+
+        if(a < 0.35) {
+            startPlatforms[0] = new Floor(world, new Vec2(0.1f, 0.15f), 0.3f, 0.05f);
+            startPlatforms[1] = new Floor(world, new Vec2(0.5f, 0.5f), 0.3f, 0.05f);
+            startPlatforms[2] = new Floor(world, new Vec2(0.9f, 0.8f), 0.3f, 0.05f);
+        } else if(a > 0.35 && a < 0.7) {
+            startPlatforms[0] = new Floor(world, new Vec2(0.1f, 0.8f), 0.3f, 0.05f);
+            startPlatforms[1] = new Floor(world, new Vec2(0.5f, 0.5f), 0.3f, 0.05f);
+            startPlatforms[2] = new Floor(world, new Vec2(0.9f, 0.8f), 0.3f, 0.05f);
+        } else {
+            startPlatforms[0] = new Floor(world, new Vec2(0.1f, 0.5f), 0.3f, 0.05f);
+            startPlatforms[1] = new Floor(world, new Vec2(0.5f, 0.5f), 0.3f, 0.05f);
+            startPlatforms[2] = new Floor(world, new Vec2(0.9f, 0.8f), 0.3f, 0.05f);
+        }
     }
 
     @Override
@@ -105,6 +121,7 @@ public class GameWorld implements Drawable, Tickable, ContactListener {
     public void draw() {
         camera.draw();
         furry.draw();
+        autism.draw();
         for (Floor s : startPlatforms) {
             s.draw();
         }

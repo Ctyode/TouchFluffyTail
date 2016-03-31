@@ -25,6 +25,11 @@ public class FluffyTailClient {
     private static Cursor cursor;
     private static ALContext context;
     private static GameWorld gameWorld;
+    private static GLFWKeyCallback glfwKeyCallback;
+    private static GLFWCursorPosCallback glfwCursorPosCallback;
+    private static GLFWMouseButtonCallback glfwMouseButtonCallback;
+    private static GLFWScrollCallback glfwScrollCallback;
+    private static GLFWWindowSizeCallback glfwWindowSizeCallback;
 
     public static void init() {
         if(glfwInit() != GL_TRUE) {
@@ -48,7 +53,8 @@ public class FluffyTailClient {
         alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
         gameWorld = new GameWorld();
         cursor = new Cursor();
-        glfwSetKeyCallback(window, new GLFWKeyCallback() {
+
+        glfwKeyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if(action == GLFW_PRESS) {
@@ -57,8 +63,9 @@ public class FluffyTailClient {
                     Input.onKeyUp(key, scancode, mods);
                 }
             }
-        });
-        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback() {
+        };
+        glfwSetKeyCallback(window, glfwKeyCallback);
+        glfwCursorPosCallback = new GLFWCursorPosCallback() {
             @Override
             public void invoke(long window, double x, double y) {
                 float mouseRelativePosX = (float)(x / windowWidth * aspect - (aspect - 1) / 2);
@@ -66,8 +73,9 @@ public class FluffyTailClient {
                 cursor.onMouseMove(mouseRelativePosX, mouseRelativePosY);
                 Input.onMouseMove(mouseRelativePosX, mouseRelativePosY);
             }
-        });
-        glfwSetMouseButtonCallback(window, new GLFWMouseButtonCallback() {
+        };
+        glfwSetCursorPosCallback(window, glfwCursorPosCallback);
+        glfwMouseButtonCallback = new GLFWMouseButtonCallback() {
             @Override
             public void invoke(long window, int button, int action, int mods) {
                 if(action == GLFW_PRESS) {
@@ -76,21 +84,24 @@ public class FluffyTailClient {
                     Input.onMouseButtonUp(button, mods);
                 }
             }
-        });
-        glfwSetScrollCallback(window, new GLFWScrollCallback() {
+        };
+        glfwSetMouseButtonCallback(window, glfwMouseButtonCallback);
+        glfwScrollCallback = new GLFWScrollCallback() {
             @Override
             public void invoke(long window, double x, double y) {
                 Input.onScroll(x, y);
             }
-        });
-        glfwSetWindowSizeCallback(window, new GLFWWindowSizeCallback() {
+        };
+        glfwSetScrollCallback(window, glfwScrollCallback);
+        glfwWindowSizeCallback = new GLFWWindowSizeCallback() {
             @Override
             public void invoke(long window, int width, int height) {
                 windowWidth = width;
                 windowHeight = height;
                 aspect = (float)windowWidth / (float)windowHeight;
             }
-        });
+        };
+        glfwSetWindowSizeCallback(window, glfwWindowSizeCallback);
     }
 
     public static void run() {

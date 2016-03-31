@@ -17,8 +17,13 @@ public class Input {
             case GLFW_KEY_A:
                 playerMoveAxis.startMovingNegative();
                 break;
-            case GLFW_KEY_SPACE:
+            case GLFW_KEY_W:
                 jumping = true;
+                break;
+            case GLFW_KEY_S:
+                playerMoveAxis.stopMovingPositive();
+                playerMoveAxis.stopMovingNegative();
+                jumping = false;
                 break;
         }
     }
@@ -31,7 +36,7 @@ public class Input {
             case GLFW_KEY_A:
                 playerMoveAxis.stopMovingNegative();
                 break;
-            case GLFW_KEY_SPACE:
+            case GLFW_KEY_W:
                 jumping = false;
                 break;
         }
